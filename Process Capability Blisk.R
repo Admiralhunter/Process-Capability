@@ -29,7 +29,7 @@ data = as.data.frame(Blisk_Compiled_Data)
 rm(Blisk_Compiled_Data)
 #Specs for the different blisk parameters
 blisks = unique(data$Part)
-specs = c(8.5,16,24,20,30)
+specs = c(5,7,4,56,12)
 
 cp1 = list()
 cpk1 = list()
@@ -88,9 +88,7 @@ for (val in blisks){
     test2 <- plot(f1, npt = datapoints, range= c(0,specs[i] + specs[i]*scalarforspec), probs = c(0.95, 0.99865, 0.999968, 0.9999997), xlab = (expression(paste(mu,'"'))),main = paste(columnname," Surface roughness for Part ",val))
     #adds vertical line for spec
     abline(v = specs[i],col = "red")
-    #par(new = TRUE)
-    #hist(datatoprocess[,4 + i],  axes = FALSE, xlab = "", ylab = "",main = NULL, xlim = c(0,45))
-    
+
     #Saves plots as PDF's
     #dev.copy(pdf,paste("Process Capability Density Plot",columnname,val,".pdf"))
     #dev.off()
@@ -115,54 +113,35 @@ for (val in blisks){
     
     
     
-    
-    ######## box cox transform section
-    #box-cox transform
-    #transformed <- boxcox(datatoprocess[,4 + i], optimize = TRUE)
-    
 
-
-    #plot(transformed, plot.type = "Q-Q Plots") 
-
-
-    #plot((datatoprocess[,4 + i] ^ transformed$lambda - 1)/ transformed$lambda)
-    #Saves plots as PDF's
-    #modified = ((datatoprocess[,4 + i] ^ transformed$lambda - 1)/ transformed$lambda)
-
-    
-    #originalppcc1[counter] = ppccTest(datatoprocess[,4 + i], qfn = 'qnorm')[["statistic"]][["ppcc"]]
-    #modifiedppcc1[counter] = ppccTest((datatoprocess[,4 + i] ^ transformed$lambda - 1)/ transformed$lambda, qfn = 'qnorm')[["statistic"]][["ppcc"]]
-    
-    
-    #########################
     #Typical process capability charting with xbar, R chart and process capability
     
     
-    #xbarplot <- qcc(datatoprocess[,4 + i], type="xbar.one",data.name = paste(columnname,val), labels = datatoprocess[,4])
-    #xbarplot <- qcc(modified, type="xbar.one",data.name = paste(columnname,val), labels = datatoprocess[,4])
-    #axes.las = 3
+    xbarplot <- qcc(datatoprocess[,4 + i], type="xbar.one",data.name = paste(columnname,val), labels = datatoprocess[,4])
+    xbarplot <- qcc(modified, type="xbar.one",data.name = paste(columnname,val), labels = datatoprocess[,4])
+    axes.las = 3
     #Saves plots as PDF's
-    #dev.copy(pdf,paste("X Bar Plot",columnname,val,".pdf"))
-    #dev.off()
+    dev.copy(pdf,paste("X Bar Plot",columnname,val,".pdf"))
+    dev.off()
     
-    #processcapability <- process.capability(xbarplot,spec.limits=c(0,specs[i]))
-    #processcapability <- process.capability(xbarplot,spec.limits=c(0,specs[i]))
-    #dev.copy(pdf,paste("Process Capability",columnname,val,".pdf"))
-    #dev.off()
+    processcapability <- process.capability(xbarplot,spec.limits=c(0,specs[i]))
+    processcapability <- process.capability(xbarplot,spec.limits=c(0,specs[i]))
+    dev.copy(pdf,paste("Process Capability",columnname,val,".pdf"))
+    dev.off()
     
-    #creates range data
-    #rData <- matrix(cbind(datatoprocess[1:dim(datatoprocess)[1]-1,4 + i], datatoprocess[2:dim(datatoprocess)[1],4 + i]), ncol=2)
-    #rData <- matrix(cbind(modified[1:length(modified)-1], modified[2:length(modified)]), ncol=2)
+    creates range data
+    rData <- matrix(cbind(datatoprocess[1:dim(datatoprocess)[1]-1,4 + i], datatoprocess[2:dim(datatoprocess)[1],4 + i]), ncol=2)
+    rData <- matrix(cbind(modified[1:length(modified)-1], modified[2:length(modified)]), ncol=2)
     
-    #rbarplot <- qcc(rData,type = "R",data.name = paste(columnname,val))
-    #dev.copy(pdf,paste("Moving Range",columnname,val,".pdf"))
-    #dev.off()
+    rbarplot <- qcc(rData,type = "R",data.name = paste(columnname,val))
+    dev.copy(pdf,paste("Moving Range",columnname,val,".pdf"))
+    dev.off()
     
     
 
     
-    #cp1[counter] = processcapability[["indices"]][1,1]
-    #cpk1[counter] = processcapability[["indices"]][3,1]
+    cp1[counter] = processcapability[["indices"]][1,1]
+    cpk1[counter] = processcapability[["indices"]][3,1]
     parts1[counter] = val
     parameter1[counter] = columnname
     
@@ -193,7 +172,7 @@ skew = unlist(skew1)
 kurt = unlist(kurt1)
 specdens = unlist(specdens1)
 cnames = unlist(cnames1)
-#processcapabilties = data.frame(parts,parameter, cp, cpk,skew,kurt,specdens)
+processcapabilties = data.frame(parts,parameter, cp, cpk,skew,kurt,specdens)
 processspecs = data.frame(parts,parameter,specdens)
 colnames(probablilitydata) = cnames
 Parts =as.character(parts)
